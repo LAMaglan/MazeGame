@@ -3,12 +3,12 @@ import settings
 
 
 class Player:
-    def __init__(self):
-        self.x = settings.PLAYER_START_X
-        self.y = settings.PLAYER_START_Y
+    def __init__(self, start_x, start_y, width, height):
+        self.x = start_x
+        self.y = start_y
         self.velocity = 1
-        self.width = settings.PLAYER_WIDTH
-        self.height = settings.PLAYER_HEIGHT
+        self.width = width
+        self.height = height
 
     def check_collision(self, dx, dy, maze):
         # Calculate potential new position
