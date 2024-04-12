@@ -1,9 +1,7 @@
 import pygame
 import settings
 from player import Player
-
-# TODO
-# from maze import Maze
+from maze import Maze
 
 
 def run_game():
@@ -12,10 +10,7 @@ def run_game():
     pygame.display.set_caption("Maze Game")
 
     player = Player()
-    # TODO:
-    # maze = (
-    #     Maze()
-    # )
+    maze = Maze()
     running = True
 
     while running:
@@ -27,13 +22,13 @@ def run_game():
         player.move(keys)
 
         # TODO:
-        # if player.has_reached_end(maze):
+        # if maze.is_at_end(player):
         #     maze.generate_new()
 
         window.fill(settings.BG_COLOR)
 
-        # TODO:
-        # maze.draw(window)
+        window.fill(settings.BG_COLOR)
+        maze.draw(window)
         player.draw(window)
 
         pygame.display.flip()

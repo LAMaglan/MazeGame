@@ -4,11 +4,11 @@ import settings
 
 class Player:
     def __init__(self):
-        self.x = 100
-        self.y = settings.GROUND_HEIGHT
+        self.x = settings.PLAYER_START_X
+        self.y = settings.PLAYER_START_Y
         self.velocity = 1
-        self.width = 20
-        self.height = 20
+        self.width = settings.PLAYER_WIDTH
+        self.height = settings.PLAYER_HEIGHT
 
     def move(self, keys):
         if keys[pygame.K_LEFT]:
@@ -19,8 +19,6 @@ class Player:
             self.y -= self.velocity
         if keys[pygame.K_DOWN]:
             self.y += self.velocity
-
-        # Add vertical movement with gravity here when you implement jumping
 
     def draw(self, window):
         pygame.draw.rect(
