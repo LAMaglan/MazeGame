@@ -22,7 +22,7 @@ class Maze:
                         break_walls(nx, ny)
 
         maze = [[False for _ in range(self.num_columns)] for _ in range(self.num_rows)]
-        start_x, start_y = (0, 0)
+        start_x, start_y = (settings.PLAYER_START_X, settings.PLAYER_START_Y)
         maze[start_y][start_x] = True
 
         break_walls(start_x, start_y)
