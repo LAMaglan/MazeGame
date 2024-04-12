@@ -19,7 +19,7 @@ def run_game():
                 running = False
 
         keys = pygame.key.get_pressed()
-        player.move(keys)
+        player.move(keys, maze)
 
         # TODO:
         # if maze.is_at_end(player):
