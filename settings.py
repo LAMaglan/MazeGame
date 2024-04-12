@@ -7,14 +7,18 @@ PLAYER_WIDTH = 10
 PLAYER_HEIGHT = 10
 PLAYER_COLOR = (255, 0, 0)  # Player color
 
-# X=0 and Y=0 is upper left
-PLAYER_START_X = 0
-PLAYER_START_Y = 0
+# Constants for the maze dimensions
+MAZE_COLUMNS = 50
+MAZE_ROWS = 50
 
-# Maze settings
-MAZE_CELL_SIZE = 20  # Assuming that a cell size equal to player size
-MAZE_WIDTH = SCREEN_WIDTH // MAZE_CELL_SIZE
-MAZE_HEIGHT = SCREEN_HEIGHT // MAZE_CELL_SIZE
+# Calculate cell size based on window dimensions and maze layout
+MAZE_CELL_SIZE = SCREEN_WIDTH // MAZE_COLUMNS  # This should be an integer result
+if SCREEN_HEIGHT // MAZE_ROWS != MAZE_CELL_SIZE:
+    raise ValueError(
+        "MAZE_CELL_SIZE does not evenly divide WINDOW_HEIGHT and WINDOW_WIDTH. "
+        "Adjust MAZE_COLUMNS, MAZE_ROWS, WINDOW_WIDTH, and WINDOW_HEIGHT so they are compatible."
+    )
+
 
 # Colors
 BG_COLOR = (0, 0, 0)  # Background color

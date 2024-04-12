@@ -1,40 +1,48 @@
 import pygame
-import settings
-from player import Player
 from maze import Maze
+from player import Player
+import settings
+
+# Pygame initialization
+pygame.init()
+screen = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
+pygame.display.set_caption("Maze Game")
+
+# Instantiate the maze
+maze = Maze(settings.MAZE_COLUMNS, settings.MAZE_ROWS, settings.MAZE_CELL_SIZE)
+
+# Instantiate the player at the maze's starting point (passing pixel coordinates)
+player = Player(
+    start_x=maze.start_x * settings.MAZE_CELL_SIZE + settings.MAZE_CELL_SIZE // 2,
+    start_y=maze.start_y * settings.MAZE_CELL_SIZE + settings.MAZE_CELL_SIZE // 2,
+    width=settings.PLAYER_WIDTH,
+    height=settings.PLAYER_HEIGHT,
+)
 
 
-def run_game():
-    pygame.init()
-    window = pygame.display.set_mode((settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
-    pygame.display.set_caption("Maze Game")
+# Game loop
+running = True
+while running:
+    # Process events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-    player = Player()
-    maze = Maze()
-    running = True
+    keys = pygame.key.get_pressed()
 
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    player.move(keys, maze)
 
-        keys = pygame.key.get_pressed()
-        player.move(keys, maze)
+    # Refresh the screen
+    screen.fill((0, 0, 0))  # Clear screen with black
 
-        # TODO:
-        # if maze.is_at_end(player):
-        #     maze.generate_new()
+    # Draw the maze
+    maze.draw(screen)
 
-        window.fill(settings.BG_COLOR)
+    # Draw the player
+    player.draw(screen)
 
-        window.fill(settings.BG_COLOR)
-        maze.draw(window)
-        player.draw(window)
+    # Update the display
+    pygame.display.flip()
 
-        pygame.display.flip()
-
-    pygame.quit()
-
-
-if __name__ == "__main__":
-    run_game()
+# Cleanup
+pygame.quit()

@@ -1,14 +1,27 @@
 import random
 import pygame
-import settings
 
 
 class Maze:
-    def __init__(self):
-        self.cell_size = settings.MAZE_CELL_SIZE
-        self.num_columns = settings.MAZE_WIDTH
-        self.num_rows = settings.MAZE_HEIGHT
+    def __init__(self, num_columns, num_rows, cell_size):
+        self.num_columns = num_columns
+        self.num_rows = num_rows
+        self.cell_size = cell_size
+
+        self.start_x, self.start_y = 0, 0
+        self.end_x, self.end_y = 0, 0
         self.maze_grid = self.make_maze()
+
+    def random_periphery_position(self):
+        # Choose a random position on the edges
+        if random.choice([True, False]):  # Choose a random horizontal or vertical edge
+            x = random.choice([0, self.num_columns - 1])
+            y = random.randrange(0, self.num_rows, 2)
+        else:
+            x = random.randrange(0, self.num_columns, 2)
+            y = random.choice([0, self.num_rows - 1])
+
+        return x, y
 
     def make_maze(self):
         def break_walls(x, y):
@@ -22,26 +35,39 @@ class Maze:
                         break_walls(nx, ny)
 
         maze = [[False for _ in range(self.num_columns)] for _ in range(self.num_rows)]
-        start_x, start_y = (settings.PLAYER_START_X, settings.PLAYER_START_Y)
-        maze[start_y][start_x] = True
 
-        break_walls(start_x, start_y)
+        # Randomize the starting position
+        self.start_x, self.start_y = self.random_periphery_position()
+        # If the start is on a border, start carving the maze from a neighboring cell, ensuring there's an entrance
+        if self.start_x == 0:
+            break_walls(self.start_x + 1, self.start_y)
+        elif self.start_x == self.num_columns - 1:
+            break_walls(self.start_x - 1, self.start_y)
+        elif self.start_y == 0:
+            break_walls(self.start_x, self.start_y + 1)
+        else:  # self.start_y == self.num_rows - 1
+            break_walls(self.start_x, self.start_y - 1)
 
-        # Mark the starting cell
-        maze[0][1] = True
+        # Mark the starting position as a path
+        maze[self.start_y][self.start_x] = True
 
-        # Mark the ending cell
-        maze[self.num_rows - 1][self.num_columns - 2] = True
+        # Randomize the ending position, ensuring it's not the same as the start
+        self.end_x, self.end_y = self.random_periphery_position()
+        while self.start_x == self.end_x and self.start_y == self.end_y:
+            self.end_x, self.end_y = self.random_periphery_position()
+
+        # Mark the ending position as a path
+        maze[self.end_y][self.end_x] = True
 
         return maze
 
     def draw(self, window):
         for y, row in enumerate(self.maze_grid):
             for x, cell in enumerate(row):
-                if cell:  # Path
-                    color = (255, 255, 255)
-                else:  # Wall
-                    color = (0, 0, 0)
+                if cell:
+                    color = (255, 255, 255)  # Cell open
+                else:
+                    color = (0, 0, 0)  # Cell blocked
                 pygame.draw.rect(
                     window,
                     color,
