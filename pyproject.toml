@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "mazegame"
+version = "0.1.0"
+description = "Simple maze game using pygame"
+authors = ["Luigi Maglanoc <luigi_maglanoc@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pygame = "^2.5.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
