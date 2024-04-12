@@ -45,11 +45,15 @@ class Player:
         if keys[pygame.K_DOWN]:
             dy = self.velocity
 
-        # Only move to the new position if there is no collision detected
+        new_x = self.x + dx
+        new_y = self.y + dy
+
+        # Check collisions for horizontal movement
         if not self.check_collision(dx, 0, maze):
-            self.x += dx
+            self.x = new_x
+        # Check collisions for vertical movement
         if not self.check_collision(0, dy, maze):
-            self.y += dy
+            self.y = new_y
 
     def draw(self, window):
         pygame.draw.rect(

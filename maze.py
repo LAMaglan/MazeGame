@@ -13,13 +13,19 @@ class Maze:
         self.maze_grid = self.make_maze()
 
     def random_periphery_position(self):
-        # Choose a random position on the edges
-        if random.choice([True, False]):  # Choose a random horizontal or vertical edge
-            x = random.choice([0, self.num_columns - 1])
-            y = random.randrange(0, self.num_rows, 2)
-        else:
-            x = random.randrange(0, self.num_columns, 2)
-            y = random.choice([0, self.num_rows - 1])
+        edge = random.choice(["top", "bottom", "left", "right"])
+        if edge == "top":
+            x = random.randrange(2, self.num_columns - 3, 2)
+            y = 2
+        elif edge == "bottom":
+            x = random.randrange(2, self.num_columns - 3, 2)
+            y = self.num_rows - 3
+        elif edge == "left":
+            x = 2
+            y = random.randrange(2, self.num_rows - 3, 2)
+        else:  # 'right'
+            x = self.num_columns - 3
+            y = random.randrange(2, self.num_rows - 3, 2)
 
         return x, y
 
@@ -34,30 +40,49 @@ class Maze:
                         maze[ny + (y - ny) // 2][nx + (x - nx) // 2] = True
                         break_walls(nx, ny)
 
+        # Initialize the maze as a grid of False (walls)
         maze = [[False for _ in range(self.num_columns)] for _ in range(self.num_rows)]
 
-        # Randomize the starting position
+        # Randomize the starting and ending positions
         self.start_x, self.start_y = self.random_periphery_position()
-        # If the start is on a border, start carving the maze from a neighboring cell, ensuring there's an entrance
-        if self.start_x == 0:
-            break_walls(self.start_x + 1, self.start_y)
-        elif self.start_x == self.num_columns - 1:
-            break_walls(self.start_x - 1, self.start_y)
-        elif self.start_y == 0:
-            break_walls(self.start_x, self.start_y + 1)
-        else:  # self.start_y == self.num_rows - 1
-            break_walls(self.start_x, self.start_y - 1)
-
-        # Mark the starting position as a path
-        maze[self.start_y][self.start_x] = True
-
-        # Randomize the ending position, ensuring it's not the same as the start
         self.end_x, self.end_y = self.random_periphery_position()
         while self.start_x == self.end_x and self.start_y == self.end_y:
             self.end_x, self.end_y = self.random_periphery_position()
 
-        # Mark the ending position as a path
-        maze[self.end_y][self.end_x] = True
+        # Carve out the path starting from a cell adjacent to the starting position
+        if self.start_x == 2:  # If it's on the left edge
+            maze[self.start_y][self.start_x - 1] = True
+            break_walls(self.start_x + 2, self.start_y)
+        elif self.start_x == self.num_columns - 3:  # If it's on the right edge
+            maze[self.start_y][self.start_x + 1] = True
+            break_walls(self.start_x - 2, self.start_y)
+        elif self.start_y == 2:  # If it's on the top edge
+            maze[self.start_y - 1][self.start_x] = True
+            break_walls(self.start_x, self.start_y + 2)
+        elif self.start_y == self.num_rows - 3:  # If it's on the bottom edge
+            maze[self.start_y + 1][self.start_x] = True
+            break_walls(self.start_x, self.start_y - 2)
+
+        # Carve out the path for the exit
+        if self.end_x == 2:
+            # Left edge, ensure we're not replacing the start
+            if maze[self.end_y][self.end_x - 1] == False:
+                maze[self.end_y][self.end_x - 1] = True
+        elif self.end_x == self.num_columns - 3:
+            # Right edge, ensure we're not replacing the start
+            if maze[self.end_y][self.end_x + 1] == False:
+                maze[self.end_y][self.end_x + 1] = True
+        elif self.end_y == 2:
+            # Top edge, ensure we're not replacing the start
+            if maze[self.end_y - 1][self.end_x] == False:
+                maze[self.end_y - 1][self.end_x] = True
+        elif self.end_y == self.num_rows - 3:
+            # Bottom edge, ensure we're not replacing the start
+            if maze[self.end_y + 1][self.end_x] == False:
+                maze[self.end_y + 1][self.end_x] = True
+
+        maze[self.start_y][self.start_x] = True  # Ensure the start is open
+        maze[self.end_y][self.end_x] = True  # Ensure the end is open
 
         return maze
 
