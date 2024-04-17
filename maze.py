@@ -23,19 +23,7 @@ class Maze:
 
         return x, y
 
-    def make_maze(self):
-        def break_walls(x, y):
-            directions = [(x - 2, y), (x + 2, y), (x, y - 2), (x, y + 2)]
-            random.shuffle(directions)
-            for nx, ny in directions:
-                if 0 <= nx < self.num_columns and 0 <= ny < self.num_rows:
-                    if not maze[ny][nx]:  # If the cell has not been visited
-                        maze[ny][nx] = True
-                        maze[ny + (y - ny) // 2][nx + (x - nx) // 2] = True
-                        break_walls(nx, ny)
-
-        maze = [[False for _ in range(self.num_columns)] for _ in range(self.num_rows)]
-
+    def random_starting_position(self, break_walls):
         # Randomize the starting position
         self.start_x, self.start_y = self.random_periphery_position()
         # If the start is on a border, start carving the maze from a neighboring cell, ensuring there's an entrance
@@ -48,17 +36,7 @@ class Maze:
         else:  # self.start_y == self.num_rows - 1
             break_walls(self.start_x, self.start_y - 1)
 
-        # Mark the starting position as a path
-        maze[self.start_y][self.start_x] = True
-
-        # Randomize the ending position, ensuring it's not the same as the start
-        self.end_x, self.end_y = self.random_periphery_position()
-        while self.start_x == self.end_x and self.start_y == self.end_y:
-            self.end_x, self.end_y = self.random_periphery_position()
-
-        # Mark the ending position as a path
-        maze[self.end_y][self.end_x] = True
-
+    def ensure_entrance_exit_paths(self, maze, break_walls):
         # Open path next to the entrance
         if self.start_x == 0:
             if not maze[self.start_y][self.start_x + 1]:
@@ -84,6 +62,7 @@ class Maze:
         elif self.end_y == self.num_rows - 1:
             maze[self.end_y - 1][self.end_x] = True
 
+    def ensure_borders(self, maze):
         # Add borders around the maze, ensuring the entrance and exit are not blocked
         for x in range(self.num_columns):
             if not (
@@ -109,6 +88,36 @@ class Maze:
                 or (y == self.end_y and self.num_columns - 1 == self.end_x)
             ):
                 maze[y][self.num_columns - 1] = False  # Right border
+
+    def make_maze(self):
+        def break_walls(x, y):
+            directions = [(x - 2, y), (x + 2, y), (x, y - 2), (x, y + 2)]
+            random.shuffle(directions)
+            for nx, ny in directions:
+                if 0 <= nx < self.num_columns and 0 <= ny < self.num_rows:
+                    if not maze[ny][nx]:  # If the cell has not been visited
+                        maze[ny][nx] = True
+                        maze[ny + (y - ny) // 2][nx + (x - nx) // 2] = True
+                        break_walls(nx, ny)
+
+        maze = [[False for _ in range(self.num_columns)] for _ in range(self.num_rows)]
+
+        self.random_starting_position(break_walls)
+
+        # Mark the starting position as a path
+        maze[self.start_y][self.start_x] = True
+
+        # Randomize the ending position, ensuring it's not the same as the start
+        self.end_x, self.end_y = self.random_periphery_position()
+        while self.start_x == self.end_x and self.start_y == self.end_y:
+            self.end_x, self.end_y = self.random_periphery_position()
+
+        # Mark the ending position as a path
+        maze[self.end_y][self.end_x] = True
+
+        self.ensure_entrance_exit_paths(maze, break_walls)
+
+        self.ensure_borders(maze)
 
         return maze
 
