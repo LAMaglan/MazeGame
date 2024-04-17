@@ -99,6 +99,32 @@ class Maze:
             ):
                 maze[y][self.num_columns - 1] = False  # Right border
 
+    def add_random_openings(self, maze, num_openings=10, use=True):
+
+        if not use:
+            return None
+
+        for _ in range(num_openings):
+            # Choose a random wall to open. Avoid the outer walls to maintain the maze border.
+            wall_x = random.randint(1, self.num_columns - 2)
+            wall_y = random.randint(1, self.num_rows - 2)
+
+            # We also ensure that we are only breaking a wall ('False') and not an open path ('True')
+            if maze[wall_y][wall_x] == False:
+                # To avoid making an opening next to another opening, check if neighboring cells are walls
+                neighbors = [
+                    (wall_x - 1, wall_y),
+                    (wall_x + 1, wall_y),
+                    (wall_x, wall_y - 1),
+                    (wall_x, wall_y + 1),
+                ]
+                if any(maze[ny][nx] == True for nx, ny in neighbors):
+                    # Break the wall
+                    maze[wall_y][wall_x] = True
+                else:
+                    # Skip this wall, try another one
+                    continue
+
     def make_maze(self):
         maze = [[False for _ in range(self.num_columns)] for _ in range(self.num_rows)]
 
@@ -118,6 +144,9 @@ class Maze:
         self.ensure_entrance_exit_paths(maze)
 
         self.ensure_borders(maze)
+
+        # Add specified number of openings
+        self.add_random_openings(maze, num_openings=10, use=True)
 
         return maze
 
