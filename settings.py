@@ -22,3 +22,7 @@ if SCREEN_HEIGHT // MAZE_ROWS != MAZE_CELL_SIZE:
 
 # Colors
 BG_COLOR = (0, 0, 0)  # Background color
+
+# TODO: mainly for testing purposes
+# RGB color for the exit, green in this case
+EXIT_COLOR = (0, 255, 0)
