@@ -59,6 +59,57 @@ class Maze:
         # Mark the ending position as a path
         maze[self.end_y][self.end_x] = True
 
+        # Open path next to the entrance
+        if self.start_x == 0:
+            if not maze[self.start_y][self.start_x + 1]:
+                break_walls(self.start_x + 1, self.start_y)
+        elif self.start_x == self.num_columns - 1:
+            if not maze[self.start_y][self.start_x - 1]:
+                break_walls(self.start_x - 1, self.start_y)
+        elif self.start_y == 0:
+            if not maze[self.start_y + 1][self.start_x]:
+                break_walls(self.start_x, self.start_y + 1)
+        else:
+            if not maze[self.start_y - 1][self.start_x]:
+                break_walls(self.start_x, self.start_y - 1)
+
+        # Open path next to the exit (if it is blocked)
+        # This should only be done if the exit isn't already on an open path.
+        if self.end_x == 0:
+            maze[self.end_y][self.end_x + 1] = True
+        elif self.end_x == self.num_columns - 1:
+            maze[self.end_y][self.end_x - 1] = True
+        elif self.end_y == 0:
+            maze[self.end_y + 1][self.end_x] = True
+        elif self.end_y == self.num_rows - 1:
+            maze[self.end_y - 1][self.end_x] = True
+
+        # Add borders around the maze, ensuring the entrance and exit are not blocked
+        for x in range(self.num_columns):
+            if not (
+                (x == self.start_x and 0 == self.start_y)
+                or (x == self.end_x and 0 == self.end_y)
+            ):
+                maze[0][x] = False  # Top border
+            if not (
+                (x == self.start_x and self.num_rows - 1 == self.start_y)
+                or (x == self.end_x and self.num_rows - 1 == self.end_y)
+            ):
+                maze[self.num_rows - 1][x] = False  # Bottom border
+
+        # Repeat for vertical borders
+        for y in range(self.num_rows):
+            if not (
+                (y == self.start_y and 0 == self.start_x)
+                or (y == self.end_y and 0 == self.end_x)
+            ):
+                maze[y][0] = False  # Left border
+            if not (
+                (y == self.start_y and self.num_columns - 1 == self.start_x)
+                or (y == self.end_y and self.num_columns - 1 == self.end_x)
+            ):
+                maze[y][self.num_columns - 1] = False  # Right border
+
         return maze
 
     def draw(self, window):
