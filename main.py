@@ -38,6 +38,16 @@ while running:
     # Draw the maze
     maze.draw(screen)
 
+    # TODO: mainly for testing purposes
+    # Highlight the exit
+    exit_rect = pygame.Rect(
+        maze.end_x * settings.MAZE_CELL_SIZE,
+        maze.end_y * settings.MAZE_CELL_SIZE,
+        settings.MAZE_CELL_SIZE,
+        settings.MAZE_CELL_SIZE,
+    )
+    pygame.draw.rect(screen, settings.EXIT_COLOR, exit_rect)
+
     # Draw the player
     player.draw(screen)
 
