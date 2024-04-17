@@ -12,6 +12,16 @@ class Maze:
         self.end_x, self.end_y = 0, 0
         self.maze_grid = self.make_maze()
 
+    def break_walls(self, x, y, maze):
+        directions = [(x - 2, y), (x + 2, y), (x, y - 2), (x, y + 2)]
+        random.shuffle(directions)
+        for nx, ny in directions:
+            if 0 <= nx < self.num_columns and 0 <= ny < self.num_rows:
+                if not maze[ny][nx]:  # If the cell has not been visited
+                    maze[ny][nx] = True
+                    maze[ny + (y - ny) // 2][nx + (x - nx) // 2] = True
+                    self.break_walls(nx, ny, maze)
+
     def random_periphery_position(self):
         # Choose a random position on the edges
         if random.choice([True, False]):  # Choose a random horizontal or vertical edge
@@ -23,33 +33,33 @@ class Maze:
 
         return x, y
 
-    def random_starting_position(self, break_walls):
+    def random_starting_position(self, maze):
         # Randomize the starting position
         self.start_x, self.start_y = self.random_periphery_position()
         # If the start is on a border, start carving the maze from a neighboring cell, ensuring there's an entrance
         if self.start_x == 0:
-            break_walls(self.start_x + 1, self.start_y)
+            self.break_walls(self.start_x + 1, self.start_y, maze)
         elif self.start_x == self.num_columns - 1:
-            break_walls(self.start_x - 1, self.start_y)
+            self.break_walls(self.start_x - 1, self.start_y, maze)
         elif self.start_y == 0:
-            break_walls(self.start_x, self.start_y + 1)
+            self.break_walls(self.start_x, self.start_y + 1, maze)
         else:  # self.start_y == self.num_rows - 1
-            break_walls(self.start_x, self.start_y - 1)
+            self.break_walls(self.start_x, self.start_y - 1, maze)
 
-    def ensure_entrance_exit_paths(self, maze, break_walls):
+    def ensure_entrance_exit_paths(self, maze):
         # Open path next to the entrance
         if self.start_x == 0:
             if not maze[self.start_y][self.start_x + 1]:
-                break_walls(self.start_x + 1, self.start_y)
+                self.break_walls(self.start_x + 1, self.start_y, maze)
         elif self.start_x == self.num_columns - 1:
             if not maze[self.start_y][self.start_x - 1]:
-                break_walls(self.start_x - 1, self.start_y)
+                self.break_walls(self.start_x - 1, self.start_y, maze)
         elif self.start_y == 0:
             if not maze[self.start_y + 1][self.start_x]:
-                break_walls(self.start_x, self.start_y + 1)
+                self.break_walls(self.start_x, self.start_y + 1, maze)
         else:
             if not maze[self.start_y - 1][self.start_x]:
-                break_walls(self.start_x, self.start_y - 1)
+                self.break_walls(self.start_x, self.start_y - 1, maze)
 
         # Open path next to the exit (if it is blocked)
         # This should only be done if the exit isn't already on an open path.
@@ -90,19 +100,9 @@ class Maze:
                 maze[y][self.num_columns - 1] = False  # Right border
 
     def make_maze(self):
-        def break_walls(x, y):
-            directions = [(x - 2, y), (x + 2, y), (x, y - 2), (x, y + 2)]
-            random.shuffle(directions)
-            for nx, ny in directions:
-                if 0 <= nx < self.num_columns and 0 <= ny < self.num_rows:
-                    if not maze[ny][nx]:  # If the cell has not been visited
-                        maze[ny][nx] = True
-                        maze[ny + (y - ny) // 2][nx + (x - nx) // 2] = True
-                        break_walls(nx, ny)
-
         maze = [[False for _ in range(self.num_columns)] for _ in range(self.num_rows)]
 
-        self.random_starting_position(break_walls)
+        self.random_starting_position(maze)
 
         # Mark the starting position as a path
         maze[self.start_y][self.start_x] = True
@@ -115,7 +115,7 @@ class Maze:
         # Mark the ending position as a path
         maze[self.end_y][self.end_x] = True
 
-        self.ensure_entrance_exit_paths(maze, break_walls)
+        self.ensure_entrance_exit_paths(maze)
 
         self.ensure_borders(maze)
 
