@@ -23,7 +23,17 @@ player = Player(
 # Instantiate the camera with the viewport size and the size of the maze
 maze_width = settings.MAZE_COLUMNS * settings.MAZE_CELL_SIZE
 maze_height = settings.MAZE_ROWS * settings.MAZE_CELL_SIZE
-camera = Camera(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT, maze_width, maze_height)
+
+# 1 is no change
+# TODO: align with coordinate system of game
+zoom_factor = 1
+camera = Camera(
+    settings.SCREEN_WIDTH,
+    settings.SCREEN_HEIGHT,
+    maze_width,
+    maze_height,
+    zoom_factor=zoom_factor,
+)
 camera.update(player)
 
 # Game loop
