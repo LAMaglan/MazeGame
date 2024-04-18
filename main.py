@@ -24,8 +24,7 @@ player = Player(
 maze_width = settings.MAZE_COLUMNS * settings.MAZE_CELL_SIZE
 maze_height = settings.MAZE_ROWS * settings.MAZE_CELL_SIZE
 
-# 1 is no change
-# TODO: align with coordinate system of game
+# 1 is currently lowest "working" factor
 zoom_factor = 1
 camera = Camera(
     settings.SCREEN_WIDTH,
@@ -34,7 +33,6 @@ camera = Camera(
     maze_height,
     zoom_factor=zoom_factor,
 )
-camera.update(player)
 
 # Game loop
 running = True
@@ -48,6 +46,8 @@ while running:
 
     player.move(keys, maze)
 
+    camera.update(player)
+
     # Refresh the screen
     screen.fill((0, 0, 0))  # Clear screen with black
 
@@ -56,13 +56,15 @@ while running:
 
     # TODO: mainly for testing purposes
     # Highlight the exit
-    exit_rect = pygame.Rect(
+    exit_rect_world = pygame.Rect(
         maze.end_x * settings.MAZE_CELL_SIZE,
         maze.end_y * settings.MAZE_CELL_SIZE,
         settings.MAZE_CELL_SIZE,
         settings.MAZE_CELL_SIZE,
     )
-    pygame.draw.rect(screen, settings.EXIT_COLOR, exit_rect)
+
+    exit_rect_screen = camera.apply(exit_rect_world)
+    pygame.draw.rect(screen, settings.EXIT_COLOR, exit_rect_screen)
 
     # Draw the player
     player.draw(screen, camera)

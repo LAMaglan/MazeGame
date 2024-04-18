@@ -153,40 +153,49 @@ class Maze:
         return self.maze_grid
 
     def draw(self, window, camera):
-        # Get the camera's position and size
-        camera_x, camera_y, camera_width, camera_height = camera.camera_rect
-
-        # Calculate the range of visible cells
-        start_cell_x = max(0, camera_x // self.cell_size)
-        end_cell_x = min(
-            self.num_columns, (camera_x + camera_width) // self.cell_size + 1
+        start_cell_x = max(
+            0, int(camera.camera_rect.x / self.cell_size / camera.zoom_factor)
         )
-        start_cell_y = max(0, camera_y // self.cell_size)
+        end_cell_x = min(
+            self.num_columns,
+            int((camera.camera_rect.right / camera.zoom_factor) / self.cell_size) + 1,
+        )
+        start_cell_y = max(
+            0, int(camera.camera_rect.y / self.cell_size / camera.zoom_factor)
+        )
         end_cell_y = min(
-            self.num_rows, (camera_y + camera_height) // self.cell_size + 1
+            self.num_rows,
+            int((camera.camera_rect.bottom / camera.zoom_factor) / self.cell_size) + 1,
         )
 
         for y in range(start_cell_y, end_cell_y):
             for x in range(start_cell_x, end_cell_x):
                 cell = self.maze_grid[y][x]
-                if cell:
-                    color = (255, 255, 255)  # Cell open
-                else:
-                    color = (0, 0, 0)  # Cell blocked
+                color = (
+                    (255, 255, 255) if cell else (0, 0, 0)
+                )  # white if cell open, black if blocked
 
-                # Calculate the rect for the cell RELATIVE to the Maze's top-left corner
-                cell_rect = pygame.Rect(
+                cell_rect_world = pygame.Rect(
                     x * self.cell_size,
                     y * self.cell_size,
                     self.cell_size,
                     self.cell_size,
                 )
+                screen_rect = camera.apply(cell_rect_world)
+                scaled_rect = pygame.Rect(
+                    screen_rect.x,
+                    screen_rect.y,
+                    int(screen_rect.width * camera.zoom_factor),
+                    int(screen_rect.height * camera.zoom_factor),
+                )
 
-                # Apply the camera translation to the cell rect to get its position on the screen
-                screen_rect = camera.apply(cell_rect)
-
-                # Draw the cell on the window using the translated rect
-                pygame.draw.rect(window, color, screen_rect)
+                if (
+                    scaled_rect.right > 0
+                    and scaled_rect.bottom > 0
+                    and scaled_rect.left < camera.camera_rect.width / camera.zoom_factor
+                    and scaled_rect.top < camera.camera_rect.height / camera.zoom_factor
+                ):
+                    pygame.draw.rect(window, color, scaled_rect)
 
     def is_at_end(self, player):
         # TODO: Implement logic to check if the player is at the end of the self.maze_grid

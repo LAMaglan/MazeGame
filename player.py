@@ -60,8 +60,8 @@ class Player:
         # Create a rect representing the position and dimensions of the player
         player_rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-        # Use camera to translate the player's rect to screen space
+        # Use camera to apply both translation and scaling on the player's rect to screen space
         screen_rect = camera.apply(player_rect)
 
-        # Draw the player using the translated screen_rect so it aligns properly with the camera's viewport
+        # Draw the player using the screen rect provided by the camera
         pygame.draw.rect(window, settings.PLAYER_COLOR, screen_rect)
