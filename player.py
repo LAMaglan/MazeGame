@@ -9,6 +9,7 @@ class Player:
         self.velocity = 1
         self.width = width
         self.height = height
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def check_collision(self, dx, dy, maze):
         # Calculate potential new position
@@ -51,7 +52,16 @@ class Player:
         if not self.check_collision(0, dy, maze):
             self.y += dy
 
-    def draw(self, window):
-        pygame.draw.rect(
-            window, settings.PLAYER_COLOR, (self.x, self.y, self.width, self.height)
-        )
+        # Update the player's rect after moving
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+    def draw(self, window, camera):
+        # Create a rect representing the position and dimensions of the player
+        player_rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+        # Use camera to translate the player's rect to screen space
+        screen_rect = camera.apply(player_rect)
+
+        # Draw the player using the translated screen_rect so it aligns properly with the camera's viewport
+        pygame.draw.rect(window, settings.PLAYER_COLOR, screen_rect)

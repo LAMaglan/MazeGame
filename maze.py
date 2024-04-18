@@ -152,23 +152,41 @@ class Maze:
 
         return self.maze_grid
 
-    def draw(self, window):
-        for y, row in enumerate(self.maze_grid):
-            for x, cell in enumerate(row):
+    def draw(self, window, camera):
+        # Get the camera's position and size
+        camera_x, camera_y, camera_width, camera_height = camera.camera_rect
+
+        # Calculate the range of visible cells
+        start_cell_x = max(0, camera_x // self.cell_size)
+        end_cell_x = min(
+            self.num_columns, (camera_x + camera_width) // self.cell_size + 1
+        )
+        start_cell_y = max(0, camera_y // self.cell_size)
+        end_cell_y = min(
+            self.num_rows, (camera_y + camera_height) // self.cell_size + 1
+        )
+
+        for y in range(start_cell_y, end_cell_y):
+            for x in range(start_cell_x, end_cell_x):
+                cell = self.maze_grid[y][x]
                 if cell:
                     color = (255, 255, 255)  # Cell open
                 else:
                     color = (0, 0, 0)  # Cell blocked
-                pygame.draw.rect(
-                    window,
-                    color,
-                    (
-                        x * self.cell_size,
-                        y * self.cell_size,
-                        self.cell_size,
-                        self.cell_size,
-                    ),
+
+                # Calculate the rect for the cell RELATIVE to the Maze's top-left corner
+                cell_rect = pygame.Rect(
+                    x * self.cell_size,
+                    y * self.cell_size,
+                    self.cell_size,
+                    self.cell_size,
                 )
+
+                # Apply the camera translation to the cell rect to get its position on the screen
+                screen_rect = camera.apply(cell_rect)
+
+                # Draw the cell on the window using the translated rect
+                pygame.draw.rect(window, color, screen_rect)
 
     def is_at_end(self, player):
         # TODO: Implement logic to check if the player is at the end of the self.maze_grid

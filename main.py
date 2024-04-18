@@ -1,6 +1,7 @@
 import pygame
 from maze import Maze
 from player import Player
+from camera import Camera
 import settings
 
 # Pygame initialization
@@ -19,6 +20,11 @@ player = Player(
     height=settings.PLAYER_HEIGHT,
 )
 
+# Instantiate the camera with the viewport size and the size of the maze
+maze_width = settings.MAZE_COLUMNS * settings.MAZE_CELL_SIZE
+maze_height = settings.MAZE_ROWS * settings.MAZE_CELL_SIZE
+camera = Camera(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT, maze_width, maze_height)
+camera.update(player)
 
 # Game loop
 running = True
@@ -36,7 +42,7 @@ while running:
     screen.fill((0, 0, 0))  # Clear screen with black
 
     # Draw the maze
-    maze.draw(screen)
+    maze.draw(screen, camera)
 
     # TODO: mainly for testing purposes
     # Highlight the exit
@@ -49,7 +55,7 @@ while running:
     pygame.draw.rect(screen, settings.EXIT_COLOR, exit_rect)
 
     # Draw the player
-    player.draw(screen)
+    player.draw(screen, camera)
 
     # Update the display
     pygame.display.flip()
