@@ -34,6 +34,9 @@ camera = Camera(
     zoom_factor=zoom_factor,
 )
 
+
+clock = pygame.time.Clock()
+
 # Game loop
 running = True
 while running:
@@ -71,6 +74,9 @@ while running:
 
     # Update the display
     pygame.display.flip()
+
+    # Limit the frame rate
+    clock.tick(100)
 
 # Cleanup
 pygame.quit()
