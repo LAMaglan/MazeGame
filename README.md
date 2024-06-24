@@ -1,3 +1,5 @@
+Note: a fair amount of help from ChatGPT throughout
+
 Run with poetry. Install poetry from [here](https://python-poetry.org/docs/)
 
 activate poetry environment
